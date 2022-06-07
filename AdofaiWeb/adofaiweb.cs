@@ -7,17 +7,25 @@ using WebSocketSharp.Server;
 using ADOFAI;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace AdofaiWeb
 {
     public class Main
     {
 
+        static void completed() { }
+
         public static bool enabled;
+        public static readonly Dictionary<HitMargin, int> lenientCounts = new Dictionary<HitMargin, int>();
+        public static readonly Dictionary<HitMargin, int> normalCounts = new Dictionary<HitMargin, int>();
+        public static readonly Dictionary<HitMargin, int> strictCounts = new Dictionary<HitMargin, int>();
         public static UnityModManager.ModEntry mod;
         private static WebSocketServer webServer;
-        private static string JsonLevelData = "{}";
-        
+        private static LevelData levelData;
+        private static System.Timers.Timer timer = new System.Timers.Timer(100);
+
+
         private static WebSocketServer InitServer(string IPAdress, int Port)
         {
             var wssv = new WebSocketServer($"ws://{IPAdress}:{Port}");
@@ -27,7 +35,8 @@ namespace AdofaiWeb
 
         static bool Load(UnityModManager.ModEntry modEntry)
         {
-            try {
+            try
+            {
 
                 webServer = InitServer("127.0.0.1", 420);
 
@@ -42,7 +51,8 @@ namespace AdofaiWeb
 
                 return true; // Successfully Loaded
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 modEntry.Logger.Error(e.ToString());
                 return false; // Failed to load
             }
@@ -55,7 +65,8 @@ namespace AdofaiWeb
             if (active)
             {
                 webServer.Start();
-            } else
+            }
+            else
             {
                 webServer.Stop();
             }
@@ -66,32 +77,106 @@ namespace AdofaiWeb
         static async void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
         {
 
-            if (scene.name == "scnEditor")
+            string data = "{\"type\": \"none\"}";
+
+            switch (scene.name)
             {
-                void completed() { };
+                case "scnEditor":
+                    await Task.Delay(250);
 
-                await Task.Delay(250);
+                    data = $"" +
+                        $"{{" +
+                            $"\"type\": \"loadScene\"," +
+                            $"\"scene\": \"scnEditor\"," +
+                            $"\"data\": {{" +
+                                $"\"artist\": \"{levelData.artist}\"," +
+                                $"\"specialArtistType\": \"{levelData.specialArtistType}\"," +
+                                $"\"artistPermission\": \"{levelData.artistPermission}\"," +
+                                $"\"song\": \"{levelData.song}\"," +
+                                $"\"author\": \"{levelData.author}\"," +
+                                $"\"separateCountdownTime\": \"{levelData.separateCountdownTime}\"," +
+                                $"\"previewImage\": \"{levelData.previewImage}\"," +
+                                $"\"previewIcon\": \"{levelData.previewIcon}\"," +
+                                $"\"previesIconColor\": \"{levelData.previewIconColor}\"," +
+                                $"\"previewSongStart\": \"{levelData.previewSongStart}\"," +
+                                $"\"previewSongDuration\": \"{levelData.previewSongDuration}\"," +
+                                $"\"seizureWarning\": \"{levelData.seizureWarning}\"," +
+                                $"\"levelDesc\": \"{levelData.levelDesc}\"," +
+                                $"\"levelTags\": \"{levelData.levelTags}\"," +
+                                $"\"artistLinks\": \"{levelData.artistLinks}\"," +
+                                $"\"difficulty\": \"{levelData.difficulty}\"," +
+                                $"\"speedMultiplier\": \"{scnEditor.instance.speedMultiplier}\"" +
+                                $"\"path\": \"{scnEditor.instance.levelPath}\"," +
+                                $"\"auto\": \"{RDC.auto}\"," +
+                                $"\"bpm\": \"{scrConductor.instance.bpm}\"," +
+                            $"}}" +
+                        $"}}";
+                    timer.AutoReset = true;
+                    timer.Elapsed += SendUpdate;
+                    timer.Start();
+                    break;
 
-                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(JsonLevelData, completed);
+                case "scnCLS":
+                    data = $"" +
+                        $"{{" +
+                            $"\"type\": \"loadScene\"," +
+                            $"\"scene\": \"scnCLS\"," +
+                            $"\"data\": {{}}" +
+                        $"}}";
+                    timer.Stop();
+                    break;
+
+                case "scnSplash":
+                    data = $"" +
+                        $"{{" +
+                            $"\"type\": \"loadScene\"," +
+                            $"\"scene\": \"scnSplash\"," +
+                            $"\"data\": {{}}" +
+                        $"}}";
+                    timer.Stop();
+                    break;
+                default:
+                    timer.Stop();
+                    break;
             }
+
+            webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
         }
 
         static void OnUpdate(UnityModManager.ModEntry modEntry, float dt)
         {
 
-            mod.Logger.Log(SceneManager.GetActiveScene().name);
+        }
 
-            int i = 0;
-            float max = dt*100000;
+        static dynamic GetHits(HitMargin hit)
+        {
+            return scrMistakesManager.hitMarginsCount[(int)hit];
+        }
 
-            if (i < max)
-            {
-                i++;
-                //webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(JsonLevelData, completed);
-            } else
-            {
-                i = 0;
-            }
+        static void SendUpdate(object sender, EventArgs e)
+        {
+            string data = $"" +
+                    $"{{" +
+                        $"\"type\": \"update\"," +
+                        $"\"data\": {{" +
+                            $"\"paused\": \"{scrController.instance.paused}\"," +
+                            $"\"checkpoints\": \"{scrController.checkpointsUsed}\"," +
+                            $"\"deaths\": \"{scrController.deaths}\"," +
+                            $"\"attempts\": \"{Persistence.GetCustomWorldAttempts(levelData.Hash)}\"," +
+                            $"\"speed\": \"{scrController.instance.speed}\"," +
+                            $"\"missesOnCurrFloor\": \"{scrController.instance.missesOnCurrFloor}\"," +
+                            $"\"percentComplete\": \"{scrController.instance.percentComplete}\"," +
+                            $"\"tooEarly\": \"{GetHits(HitMargin.TooEarly)}\"," +
+                            $"\"veryEarly\": \"{GetHits(HitMargin.VeryEarly)}\"," +
+                            $"\"earlyPerfect\": \"{GetHits(HitMargin.EarlyPerfect)}\"," +
+                            $"\"perfect\": \"{GetHits(HitMargin.Perfect)}\"," +
+                            $"\"latePerfect\": \"{GetHits(HitMargin.LatePerfect)}\"," +
+                            $"\"veryLate\": \"{GetHits(HitMargin.VeryLate)}\"," +
+                            $"\"tooLate\": \"{GetHits(HitMargin.TooLate)}\"," +
+                        $"}}" +
+                    $"}}";
+
+            webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
         }
 
         static bool OnUnload(UnityModManager.ModEntry modEntry, bool active)
@@ -107,22 +192,7 @@ namespace AdofaiWeb
             [HarmonyPostfix]
             static void PostFix(ref LevelData __instance, ref dynamic __result)
             {
-                JsonLevelData = $"{{\"artist\": \"{__instance.artist}\"" +
-                    $"\"specialArtistType\": \"{__instance.specialArtistType}\"" +
-                    $"\"artistPermission\": \"{__instance.artistPermission}\"" +
-                    $"\"song\": \"{__instance.song}\"" +
-                    $"\"author\": \"{__instance.author}\"" +
-                    $"\"separateCountdownTime\": \"{__instance.separateCountdownTime}\"" +
-                    $"\"previewImage\": \"{__instance.previewImage}\"" +
-                    $"\"previewIcon\": \"{__instance.previewIcon}\"" +
-                    $"\"previesIconColor\": \"{__instance.previewIconColor}\"" +
-                    $"\"previewSongStart\": \"{__instance.previewSongStart}\"" +
-                    $"\"previewSongDuration\": \"{__instance.previewSongDuration}\"" +
-                    $"\"seizureWarning\": \"{__instance.seizureWarning}\"" +
-                    $"\"levelDesc\": \"{__instance.levelDesc}\"" +
-                    $"\"levelTags\": \"{__instance.levelTags}\"" +
-                    $"\"artistLinks\": \"{__instance.artistLinks}\"" +
-                    $"\"difficulty\": \"{__instance.difficulty}\"}}";
+                levelData = __instance;
             }
 
             [HarmonyFinalizer]
@@ -130,22 +200,31 @@ namespace AdofaiWeb
             {
                 if (__exception != null)
                 {
-                    Console.WriteLine(__exception.Message);
-                    Console.WriteLine(__exception.StackTrace);
-                    Console.WriteLine("\n---Full Exception---\n");
                     Console.WriteLine(__exception.ToString());
                 }
                 return null;
             }
         }
-
     }
 
     public class Server: WebSocketBehavior
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            Send("bruh");
+            switch(e.Data.ToLower())
+            {
+                case "connected":
+                    Send("Connected Successfully!");
+                    break;
+
+                case "ping":
+                    Send("Pong");
+                    break;
+
+                default:
+                    Send("I don't know that command");
+                    break;
+            }
         }
     }
 }
