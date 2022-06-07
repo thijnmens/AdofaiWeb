@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1972
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdofaiWeb", "AdofaiWeb\AdofaiWeb.csproj", "{CC99ED9B-D0A5-4A69-A87E-04741338C498}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC99ED9B-D0A5-4A69-A87E-04741338C498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC99ED9B-D0A5-4A69-A87E-04741338C498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC99ED9B-D0A5-4A69-A87E-04741338C498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC99ED9B-D0A5-4A69-A87E-04741338C498}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {470B3BEF-CF18-4D7B-8B2E-85830BE92B9B}
+	EndGlobalSection
+EndGlobal
