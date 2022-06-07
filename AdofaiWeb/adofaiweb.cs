@@ -2,19 +2,22 @@
 using UnityModManagerNet;
 using System;
 using System.Reflection;
+using System.Drawing;
+using System.Linq;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using ADOFAI;
 using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace AdofaiWeb
 {
     public class Main
     {
 
-        static void completed() { }
+        private static void completed() { }
 
         public static bool enabled;
         public static readonly Dictionary<HitMargin, int> lenientCounts = new Dictionary<HitMargin, int>();
@@ -23,7 +26,7 @@ namespace AdofaiWeb
         public static UnityModManager.ModEntry mod;
         private static WebSocketServer webServer;
         private static LevelData levelData;
-        private static System.Timers.Timer timer = new System.Timers.Timer(100);
+        private static int i = 0;
 
 
         private static WebSocketServer InitServer(string IPAdress, int Port)
@@ -33,11 +36,10 @@ namespace AdofaiWeb
             return wssv;
         }
 
-        static bool Load(UnityModManager.ModEntry modEntry)
+        private static bool Load(UnityModManager.ModEntry modEntry)
         {
             try
             {
-
                 webServer = InitServer("127.0.0.1", 420);
 
                 var harmony = new Harmony(modEntry.Info.Id);
@@ -47,7 +49,7 @@ namespace AdofaiWeb
                 modEntry.OnToggle = OnToggle;
                 modEntry.OnUpdate = OnUpdate;
 
-                SceneManager.sceneLoaded += OnSceneLoad;
+                SceneManager.activeSceneChanged += SceneChange;
 
                 return true; // Successfully Loaded
             }
@@ -58,7 +60,42 @@ namespace AdofaiWeb
             }
         }
 
-        static bool OnToggle(UnityModManager.ModEntry modEntry, bool active)
+        private static string Base64Image(string path)
+        {
+            using (Image image = Image.FromFile(path))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    image.Save(m, image.RawFormat);
+                    byte[] imageBytes = m.ToArray();
+
+                    // Convert byte[] to Base64 String
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    return base64String;
+                }
+            }
+        }
+
+        private static async void SceneChange(Scene scene1, Scene scene2)
+        {
+            if (scene2.name == "scnEditor")
+            {
+                await Task.Delay(100);
+
+                string data = $"" +
+                    $"{{" +
+                        $"\"type\": \"sceneChange\"," +
+                        $"\"data\": {{" +
+                                $"\"previewImage\": \"{Base64Image((Directory.GetParent(scnEditor.instance.levelPath).ToString() + "\\" + levelData.previewImage).Replace('\\', '/'))}\"," +
+                                $"\"extension\": \"{levelData.previewImage.Split('.').AsQueryable().Last()}\"" +
+                            $"}}" +
+                    $"}}";
+
+                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+            }
+        }
+
+        private static bool OnToggle(UnityModManager.ModEntry modEntry, bool active)
         {
             enabled = active;
 
@@ -74,112 +111,74 @@ namespace AdofaiWeb
             return true;
         }
 
-        static async void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
+        private static void OnUpdate(UnityModManager.ModEntry modEntry, float dt)
         {
 
-            string data = "{\"type\": \"none\"}";
-
-            switch (scene.name)
+            if (i < 10)
             {
-                case "scnEditor":
-                    await Task.Delay(250);
-
-                    data = $"" +
-                        $"{{" +
-                            $"\"type\": \"loadScene\"," +
-                            $"\"scene\": \"scnEditor\"," +
-                            $"\"data\": {{" +
-                                $"\"artist\": \"{levelData.artist}\"," +
-                                $"\"specialArtistType\": \"{levelData.specialArtistType}\"," +
-                                $"\"artistPermission\": \"{levelData.artistPermission}\"," +
-                                $"\"song\": \"{levelData.song}\"," +
-                                $"\"author\": \"{levelData.author}\"," +
-                                $"\"separateCountdownTime\": \"{levelData.separateCountdownTime}\"," +
-                                $"\"previewImage\": \"{levelData.previewImage}\"," +
-                                $"\"previewIcon\": \"{levelData.previewIcon}\"," +
-                                $"\"previesIconColor\": \"{levelData.previewIconColor}\"," +
-                                $"\"previewSongStart\": \"{levelData.previewSongStart}\"," +
-                                $"\"previewSongDuration\": \"{levelData.previewSongDuration}\"," +
-                                $"\"seizureWarning\": \"{levelData.seizureWarning}\"," +
-                                $"\"levelDesc\": \"{levelData.levelDesc}\"," +
-                                $"\"levelTags\": \"{levelData.levelTags}\"," +
-                                $"\"artistLinks\": \"{levelData.artistLinks}\"," +
-                                $"\"difficulty\": \"{levelData.difficulty}\"," +
-                                $"\"speedMultiplier\": \"{scnEditor.instance.speedMultiplier}\"" +
-                                $"\"path\": \"{scnEditor.instance.levelPath}\"," +
-                                $"\"auto\": \"{RDC.auto}\"," +
-                                $"\"bpm\": \"{scrConductor.instance.bpm}\"," +
-                            $"}}" +
-                        $"}}";
-                    timer.AutoReset = true;
-                    timer.Elapsed += SendUpdate;
-                    timer.Start();
-                    break;
-
-                case "scnCLS":
-                    data = $"" +
-                        $"{{" +
-                            $"\"type\": \"loadScene\"," +
-                            $"\"scene\": \"scnCLS\"," +
-                            $"\"data\": {{}}" +
-                        $"}}";
-                    timer.Stop();
-                    break;
-
-                case "scnSplash":
-                    data = $"" +
-                        $"{{" +
-                            $"\"type\": \"loadScene\"," +
-                            $"\"scene\": \"scnSplash\"," +
-                            $"\"data\": {{}}" +
-                        $"}}";
-                    timer.Stop();
-                    break;
-                default:
-                    timer.Stop();
-                    break;
+                i++;
             }
+            else
+            {
+                i = 0;
 
-            webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
-        }
+                string data = "{\"type\": \"default\"}";
 
-        static void OnUpdate(UnityModManager.ModEntry modEntry, float dt)
-        {
-
-        }
-
-        static dynamic GetHits(HitMargin hit)
-        {
-            return scrMistakesManager.hitMarginsCount[(int)hit];
-        }
-
-        static void SendUpdate(object sender, EventArgs e)
-        {
-            string data = $"" +
+                if (SceneManager.GetActiveScene().name == "scnEditor")
+                {
+                    data = $"" +
                     $"{{" +
                         $"\"type\": \"update\"," +
                         $"\"data\": {{" +
                             $"\"paused\": \"{scrController.instance.paused}\"," +
-                            $"\"checkpoints\": \"{scrController.checkpointsUsed}\"," +
-                            $"\"deaths\": \"{scrController.deaths}\"," +
-                            $"\"attempts\": \"{Persistence.GetCustomWorldAttempts(levelData.Hash)}\"," +
+                            $"\"checkpoints\": {scrController.checkpointsUsed}," +
+                            $"\"deaths\": {scrController.deaths}," +
+                            $"\"attempts\": {Persistence.GetCustomWorldAttempts(levelData.Hash)}," +
                             $"\"speed\": \"{scrController.instance.speed}\"," +
-                            $"\"missesOnCurrFloor\": \"{scrController.instance.missesOnCurrFloor}\"," +
-                            $"\"percentComplete\": \"{scrController.instance.percentComplete}\"," +
+                            $"\"percentComplete\": {scrController.instance.percentComplete}," +
                             $"\"tooEarly\": \"{GetHits(HitMargin.TooEarly)}\"," +
                             $"\"veryEarly\": \"{GetHits(HitMargin.VeryEarly)}\"," +
                             $"\"earlyPerfect\": \"{GetHits(HitMargin.EarlyPerfect)}\"," +
                             $"\"perfect\": \"{GetHits(HitMargin.Perfect)}\"," +
                             $"\"latePerfect\": \"{GetHits(HitMargin.LatePerfect)}\"," +
                             $"\"veryLate\": \"{GetHits(HitMargin.VeryLate)}\"," +
-                            $"\"tooLate\": \"{GetHits(HitMargin.TooLate)}\"," +
-                        $"}}" +
+                            $"\"tooLate\": \"{GetHits(HitMargin.TooLate)}\"" +
+                        $"}}," +
+                        $"\"levelData\": {{" +
+                                $"\"artist\": \"{levelData.artist.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"specialArtistType\": \"{levelData.specialArtistType}\"," +
+                                $"\"artistPermission\": \"{levelData.artistPermission.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"song\": \"{levelData.song.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"author\": \"{levelData.author.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"separateCountdownTime\": \"{levelData.separateCountdownTime}\"," +
+                                $"\"previewImage\": \"{(Directory.GetParent(scnEditor.instance.levelPath).ToString() + "\\" + levelData.previewImage).Replace('\\', '/')}\"," +
+                                $"\"previewIcon\": \"{levelData.previewIcon}\"," +
+                                $"\"previesIconColor\": \"{levelData.previewIconColor}\"," +
+                                $"\"previewSongStart\": \"{levelData.previewSongStart}\"," +
+                                $"\"previewSongDuration\": \"{levelData.previewSongDuration}\"," +
+                                $"\"seizureWarning\": \"{levelData.seizureWarning}\"," +
+                                $"\"levelDesc\": \"{levelData.levelDesc.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"levelTags\": \"{levelData.levelTags.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"artistLinks\": \"{levelData.artistLinks.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"difficulty\": {levelData.difficulty}," +
+                                $"\"speedMultiplier\": \"{scnEditor.instance.speedMultiplier}\"," +
+                                $"\"path\": \"{scnEditor.instance.levelPath.Replace('\\', '/').Replace("\r", "")}\"," +
+                                $"\"auto\": \"{RDC.auto}\"," +
+                                $"\"bpm\": \"{scrConductor.instance.bpm}\"" +
+                            $"}}" +
                     $"}}";
+                }
 
-            webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+            }
         }
 
-        static bool OnUnload(UnityModManager.ModEntry modEntry, bool active)
+        private static int GetHits(HitMargin hit)
+        {
+            return scrMistakesManager.hitMarginsCount[(int)hit];
+        }
+
+        private static bool OnUnload(UnityModManager.ModEntry modEntry, bool active)
         {
             webServer.Stop();
             return true;
@@ -213,16 +212,16 @@ namespace AdofaiWeb
         {
             switch(e.Data.ToLower())
             {
-                case "connected":
-                    Send("Connected Successfully!");
+                case "connect":
+                    Send("{\"status\": \"Connected Successfully!\"}");
                     break;
 
                 case "ping":
-                    Send("Pong");
+                    Send("{\"status\": \"pong\"}");
                     break;
 
                 default:
-                    Send("I don't know that command");
+                    Send("{\"status\": \"I dont know that command\"}");
                     break;
             }
         }
