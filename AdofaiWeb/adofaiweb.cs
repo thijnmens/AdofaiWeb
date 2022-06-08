@@ -10,7 +10,6 @@ using ADOFAI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace AdofaiWeb
 {
@@ -41,6 +40,7 @@ namespace AdofaiWeb
         {
             try
             {
+
                 webServer = InitServer("127.0.0.1", 420);
 
                 var harmony = new Harmony(modEntry.Info.Id);

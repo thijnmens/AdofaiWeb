@@ -59,23 +59,5 @@ namespace AdofaiWeb.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 127.0.0.1.
-        /// </summary>
-        public static string IP {
-            get {
-                return ResourceManager.GetString("IP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 420.
-        /// </summary>
-        public static string Port {
-            get {
-                return ResourceManager.GetString("Port", resourceCulture);
-            }
-        }
     }
 }

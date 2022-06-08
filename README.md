@@ -10,9 +10,10 @@ I've created a few example layouts in the [examples](https://github.com/thijnmen
 
 1. [Download](https://github.com/thijnmens/AdofaiWeb/releases/latest) latest release
 2. Install through [UMM](https://www.nexusmods.com/site/mods/21?tab=files)
-3. Add browser source to OBS
-4. Download a theme from the [examples](https://github.com/thijnmens/AdofaiWeb/tree/master/Examples) folder (or create your own!)
-5. Set the browser source target to downloaded html file
+3. Copy `websocket-sharp.dll` (located in the zip file) into the `A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed` folder
+4. Add browser source to OBS
+5. Download a theme from the [examples](https://github.com/thijnmens/AdofaiWeb/tree/master/Examples) folder (or create your own!)
+6. Set the browser source target to downloaded html file
 
 ## Websocket
 
