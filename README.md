@@ -1,20 +1,24 @@
 # AdofaiWeb
 
-Adofai Websocket
-
 A simple ADOFAI mod which creates a websocket that you can listen to
 
 **WARNING: THIS MOD DOES NOTHING ON IT'S OWN**
 
-### Instalation
+## Instalation
 
 I've created a few example layouts in the [examples](https://github.com/thijnmens/AdofaiWeb/tree/master/Examples) folder, you can choose one from here or simply make your own with the instructions down below.
 
-### Websocket
+1. [Download](https://github.com/thijnmens/AdofaiWeb/releases/latest) latest release
+2. Install through [UMM](https://www.nexusmods.com/site/mods/21?tab=files)
+3. Add browser source to OBS
+4. Download a theme from the [examples](https://github.com/thijnmens/AdofaiWeb/tree/master/Examples) folder (or create your own!)
+5. Set the browser source target to downloaded html file
+
+## Websocket
 
 The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of the following formats
 
-#### Default
+### Default
 
 -   When?
     -   when in any other scene than the scnEditor scene
@@ -27,7 +31,7 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
 }
 ```
 
-#### LevelImage
+### LevelImage
 
 -   When?
     -   When loading custom level
@@ -44,7 +48,7 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
 }
 ```
 
-#### Update
+### Update
 
 -   When?
     -   When in custom level
@@ -72,7 +76,7 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
 }
 ```
 
-#### LoadLevel
+### LoadLevel
 
 -   When?
     -   When loading custom level
@@ -153,6 +157,10 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
 }
 ```
 
-### Developing
+## Developing
 
 Want to help develop this project? Clone the project, install all the packages and fix any refrence errors and you should be good to go.
+
+## Supporting
+
+You can support me though [paypal](https://www.paypal.com/donate/?hosted_button_id=T4RMGM6JT7GJ6) (or just add a star to the repository 👍)
