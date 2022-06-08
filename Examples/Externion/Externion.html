@@ -90,19 +90,17 @@
 			})
 
 			socket.addEventListener('message', (event) => {
+				console.log(event.data)
 				const jsonData = JSON.parse(event.data)
 				if (jsonData.type === 'update') {
-					document.getElementById('root').style = 'width: 1200px'
-
-					document.getElementById('song-title').textContent = jsonData.levelData.song.replace(/<\/?[^>]+(>|$)/g, '');;
-					document.getElementById('song-author').textContent = jsonData.levelData.author.replace(/<\/?[^>]+(>|$)/g, '');;
-					/*if (jsonData.levelData.difficulty === 0) {
+					document.getElementById('root').style = 'width: 1200px';
+					/*if (jsonData.data.difficulty === 0) {
 						document.getElementById('difficulty').textContent = "Lenient";
 						document.getElementById('difficulty').style = "color: #86e370";
-					} else if (jsonData.levelData.difficulty === 1) {
+					} else if (jsonData.data.difficulty === 1) {
 						document.getElementById('difficulty').textContent = "Normal";
 						document.getElementById('difficulty').style = "color: #e3e370";
-					} else if (jsonData.levelData.difficulty === 5) {
+					} else if (jsonData.data.difficulty === 5) {
 						document.getElementById('difficulty').textContent = "Strict";
 						document.getElementById('difficulty').style = "color: #ed3e3e";
 					}*/
@@ -117,9 +115,11 @@
 					document.getElementById('checkpoint-counter').textContent = "🚩 " + jsonData.data.checkpoints;
 					document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
-				} else if (jsonData.type === 'sceneChange') {
-					console.log(`data:image/${jsonData.data.extension};${jsonData.data.previewImage}`)
-					document.getElementById('cover-image').src = `data:image/${jsonData.data.extension};base64, ${jsonData.data.previewImage}`;
+				} else if (jsonData.type === 'loadLevel') {
+					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');;
+					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');;
+				} else if (jsonData.type === 'levelImage') {
+					document.getElementById('cover-image').src = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`;
 				} else {
 					document.getElementById('root').style = 'width: 0%'
 				}

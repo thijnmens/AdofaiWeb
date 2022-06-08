@@ -27,6 +27,7 @@ namespace AdofaiWeb
         private static WebSocketServer webServer;
         private static LevelData levelData;
         private static int i = 0;
+        private static bool didSendImage = false;
 
 
         private static WebSocketServer InitServer(string IPAdress, int Port)
@@ -48,8 +49,6 @@ namespace AdofaiWeb
                 mod = modEntry;
                 modEntry.OnToggle = OnToggle;
                 modEntry.OnUpdate = OnUpdate;
-
-                SceneManager.activeSceneChanged += SceneChange;
 
                 return true; // Successfully Loaded
             }
@@ -73,25 +72,6 @@ namespace AdofaiWeb
                     string base64String = Convert.ToBase64String(imageBytes);
                     return base64String;
                 }
-            }
-        }
-
-        private static async void SceneChange(Scene scene1, Scene scene2)
-        {
-            if (scene2.name == "scnEditor")
-            {
-                await Task.Delay(100);
-
-                string data = $"" +
-                    $"{{" +
-                        $"\"type\": \"sceneChange\"," +
-                        $"\"data\": {{" +
-                                $"\"previewImage\": \"{Base64Image((Directory.GetParent(scnEditor.instance.levelPath).ToString() + "\\" + levelData.previewImage).Replace('\\', '/'))}\"," +
-                                $"\"extension\": \"{levelData.previewImage.Split('.').AsQueryable().Last()}\"" +
-                            $"}}" +
-                    $"}}";
-
-                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
             }
         }
 
@@ -126,47 +106,43 @@ namespace AdofaiWeb
 
                 if (SceneManager.GetActiveScene().name == "scnEditor")
                 {
-                    data = $"" +
-                    $"{{" +
-                        $"\"type\": \"update\"," +
-                        $"\"data\": {{" +
-                            $"\"paused\": \"{scrController.instance.paused}\"," +
-                            $"\"checkpoints\": {scrController.checkpointsUsed}," +
-                            $"\"deaths\": {scrController.deaths}," +
-                            $"\"attempts\": {Persistence.GetCustomWorldAttempts(levelData.Hash)}," +
-                            $"\"speed\": \"{scrController.instance.speed}\"," +
-                            $"\"percentComplete\": {scrController.instance.percentComplete}," +
-                            $"\"tooEarly\": \"{GetHits(HitMargin.TooEarly)}\"," +
-                            $"\"veryEarly\": \"{GetHits(HitMargin.VeryEarly)}\"," +
-                            $"\"earlyPerfect\": \"{GetHits(HitMargin.EarlyPerfect)}\"," +
-                            $"\"perfect\": \"{GetHits(HitMargin.Perfect)}\"," +
-                            $"\"latePerfect\": \"{GetHits(HitMargin.LatePerfect)}\"," +
-                            $"\"veryLate\": \"{GetHits(HitMargin.VeryLate)}\"," +
-                            $"\"tooLate\": \"{GetHits(HitMargin.TooLate)}\"" +
-                        $"}}," +
-                        $"\"levelData\": {{" +
-                                $"\"artist\": \"{levelData.artist.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"specialArtistType\": \"{levelData.specialArtistType}\"," +
-                                $"\"artistPermission\": \"{levelData.artistPermission.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"song\": \"{levelData.song.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"author\": \"{levelData.author.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"separateCountdownTime\": \"{levelData.separateCountdownTime}\"," +
-                                $"\"previewImage\": \"{(Directory.GetParent(scnEditor.instance.levelPath).ToString() + "\\" + levelData.previewImage).Replace('\\', '/')}\"," +
-                                $"\"previewIcon\": \"{levelData.previewIcon}\"," +
-                                $"\"previesIconColor\": \"{levelData.previewIconColor}\"," +
-                                $"\"previewSongStart\": \"{levelData.previewSongStart}\"," +
-                                $"\"previewSongDuration\": \"{levelData.previewSongDuration}\"," +
-                                $"\"seizureWarning\": \"{levelData.seizureWarning}\"," +
-                                $"\"levelDesc\": \"{levelData.levelDesc.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"levelTags\": \"{levelData.levelTags.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"artistLinks\": \"{levelData.artistLinks.Replace("\n", "").Replace("\r", "")}\"," +
-                                $"\"difficulty\": {levelData.difficulty}," +
-                                $"\"speedMultiplier\": \"{scnEditor.instance.speedMultiplier}\"," +
-                                $"\"path\": \"{scnEditor.instance.levelPath.Replace('\\', '/').Replace("\r", "")}\"," +
-                                $"\"auto\": \"{RDC.auto}\"," +
-                                $"\"bpm\": \"{scrConductor.instance.bpm}\"" +
+                    string path = scrController.instance.levelPath;
+
+                    if (!didSendImage)
+                    {
+                        didSendImage = true;
+
+                        data = $"" +
+                        $"{{" +
+                            $"\"type\": \"levelImage\"," +
+                            $"\"data\": {{" +
+                                $"\"previewImage\": \"{Base64Image((Directory.GetParent(path).ToString() + "\\" + levelData.previewImage).Replace('\\', '/'))}\"," +
+                                $"\"previewImageExtension\": \"{levelData.previewImage.Split('.').AsQueryable().Last()}\"" +
                             $"}}" +
-                    $"}}";
+                        $"}}";
+                    } else
+                    {
+                        data = $"" +
+                        $"{{" +
+                            $"\"type\": \"update\"," +
+                            $"\"data\": {{" +
+                                $"\"paused\": {scrController.instance.paused},".ToLower() +
+                                $"\"checkpoints\": {scrController.checkpointsUsed}," +
+                                $"\"deaths\": {scrController.deaths}," +
+                                $"\"attempts\": {Persistence.GetCustomWorldAttempts(levelData.Hash)}," +
+                                $"\"speed\": \"{scrController.instance.speed}\"," +
+                                $"\"percentComplete\": {scrController.instance.percentComplete}," +
+                                $"\"tooEarly\": {GetHits(HitMargin.TooEarly)}," +
+                                $"\"veryEarly\": {GetHits(HitMargin.VeryEarly)}," +
+                                $"\"earlyPerfect\": {GetHits(HitMargin.EarlyPerfect)}," +
+                                $"\"perfect\": {GetHits(HitMargin.Perfect)}," +
+                                $"\"latePerfect\": {GetHits(HitMargin.LatePerfect)}," +
+                                $"\"veryLate\": {GetHits(HitMargin.VeryLate)}," +
+                                $"\"tooLate\": {GetHits(HitMargin.TooLate)}" +
+                            $"}}" +
+                        $"}}";
+                    }
+
                 }
 
                 webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
@@ -184,23 +160,111 @@ namespace AdofaiWeb
             return true;
         }
 
+        public static void WaitUntil()
+        {
+
+        }
+
         [HarmonyPatch(typeof(LevelData), "LoadLevel")]
         public static class LoadLevel
         {
 
             [HarmonyPostfix]
-            static void PostFix(ref LevelData __instance, ref dynamic __result)
+            public static void PostFix(ref LevelData __instance, ref dynamic __result)
             {
                 levelData = __instance;
+               
+
+                if (SceneManager.GetActiveScene().name == "scnEditor")
+                {
+                    didSendImage = false;
+                    string data = $"" +
+                        $"{{" +
+                            $"\"type\": \"loadLevel\"," +
+                            $"\"data\": {{" +
+                                $"\"calibration_i\": {scrConductor.calibration_i}," +
+                                $"\"calibration_v\": {scrConductor.calibration_v}," +
+                                $"\"beatNumber\": {scrConductor.instance.beatNumber}," +
+                                $"\"angleData\": [{string.Join(",", levelData.angleData)}]," +
+                                $"\"artist\": \"{levelData.artist.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"artistLinks\": \"{levelData.artistLinks.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"artistPermission\": \"{levelData.artistPermission.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"author\": \"{levelData.author.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"backgroundColor\": \"{levelData.backgroundColor}\"," +
+                                $"\"bgFitScreen\": " + $"{levelData.bgFitScreen},".ToLower() +
+                                $"\"bgImage\": \"{levelData.bgImage.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"bgImageColor\": \"{levelData.bgImageColor}\"," +
+                                $"\"bgLockRot\": " + $"{levelData.bgLockRot},".ToLower() +
+                                $"\"bgLooping\": " + $"{levelData.bgLooping},".ToLower() +
+                                $"\"bgParallax\": \"{levelData.bgParallax}\"," +
+                                $"\"bgShowDefaultBGIfNoImage\": "+$"{levelData.bgShowDefaultBGIfNoImage},".ToLower() +
+                                $"\"bgTiling\": " + $"{levelData.bgTiling},".ToLower() +
+                                $"\"bgVideo\": \"{levelData.bgVideo.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"bpm\": {levelData.bpm}," +
+                                $"\"camPosition\": \"{levelData.camPosition}\"," +
+                                $"\"camRelativeTo\": \"{levelData.camRelativeTo}\"," +
+                                $"\"camRotation\": {levelData.camRotation}," +
+                                $"\"camZoom\": {levelData.camZoom}," +
+                                $"\"countdownTicks\": {levelData.countdownTicks}," +
+                                $"\"difficulty\": {levelData.difficulty}," +
+                                $"\"floorIconOutlines\": " + $"{levelData.floorIconOutlines},".ToLower() +
+                                $"\"fullCaption\": \"{levelData.fullCaption.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"fullCaptionTagged\": \"{levelData.fullCaptionTagged.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"Hash\": \"{levelData.Hash.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"hitsound\": \"{levelData.hitsound}\"," +
+                                $"\"hitsoundVolume\": {levelData.hitsoundVolume}," +
+                                $"\"isOldLevel\": " + $"{levelData.isOldLevel},".ToLower() +
+                                $"\"legacyFlash\": " + $"{levelData.legacyFlash},".ToLower() +
+                                $"\"levelDesc\": \"{levelData.levelDesc.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"levelTags\": [\"{string.Join("\", \"", levelData.levelTags.Replace("\n", "").Replace("\r", "").Split(','))}\"]," +
+                                $"\"offset\": {levelData.offset}," +
+                                $"\"oldCameraFollowStyle\": " + $"{levelData.oldCameraFollowStyle},".ToLower() +
+                                $"\"pathData\": \"{levelData.pathData.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"pitch\": {levelData.pitch}," +
+                                $"\"planetEase\": \"{levelData.planetEase}\"," +
+                                $"\"planetEaseParts\": {levelData.planetEaseParts}," +
+                                $"\"previewIcon\": \"{levelData.previewIcon.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"previewIconColor\": \"{levelData.previewIconColor}\"," +
+                                $"\"previewSongDuration\": {levelData.previewSongDuration}," +
+                                $"\"previewSongStart\": {levelData.previewSongStart}," +
+                                $"\"requiredDLC\": \"{levelData.requiredDLC}\"," +
+                                $"\"secondaryTrackColor\": \"{levelData.secondaryTrackColor}\"," +
+                                $"\"seizureWarning\": " + $"{levelData.seizureWarning},".ToLower() +
+                                $"\"separateCountdownTime\": " + $"{levelData.separateCountdownTime},".ToLower() +
+                                $"\"song\": \"{levelData.song.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"songFilename\": \"{levelData.songFilename.Replace("\n", "").Replace("\r", "")}\"," +
+                                $"\"specialArtistType\": \"{levelData.specialArtistType}\"," +
+                                $"\"stickToFloors\": " + $"{levelData.stickToFloors},".ToLower() +
+                                $"\"trackAnimation\": \"{levelData.trackAnimation}\"," +
+                                $"\"trackBeatsAhead\": {levelData.trackBeatsAhead}," +
+                                $"\"trackBeatsBehind\": {levelData.trackBeatsBehind}," +
+                                $"\"trackColor\": \"{levelData.trackColor}\"," +
+                                $"\"trackColorAnimDuration\": {levelData.trackColorAnimDuration}," +
+                                $"\"trackColorPulse\": \"{levelData.trackColorPulse}\"," +
+                                $"\"trackColorType\": \"{levelData.trackColorType}\"," +
+                                $"\"trackDisappearAnimation\": \"{levelData.trackDisappearAnimation}\"," +
+                                $"\"trackPulseLength\": {levelData.trackPulseLength}," +
+                                $"\"trackStyle\": \"{levelData.trackStyle}\"," +
+                                $"\"unscaledSize\": {levelData.unscaledSize}," +
+                                $"\"version\": {levelData.version}," +
+                                $"\"volume\": {levelData.volume}" +
+                            $"}}" +
+                        $"}}";
+
+
+
+                    webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+                }
             }
 
             [HarmonyFinalizer]
-            static Exception Finalizer(Exception __exception)
+            public static Exception Finalizer(Exception __exception)
             {
                 if (__exception != null)
                 {
                     Console.WriteLine(__exception.ToString());
                 }
+
                 return null;
             }
         }
