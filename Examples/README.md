@@ -2,7 +2,7 @@
 
 ## Externion
 
-![ExternionExample.png](Examples/Externion/Pictures/ExternionExample.png 'ExternionExample.png')
+![ExternionExample.png](Externion/Pictures/ExternionExample.png 'ExternionExample.png')
 
 [Get Externion](https://github.com/thijnmens/AdofaiWeb/blob/master/Examples/Externion/Externion.html)
 Width: 1200
