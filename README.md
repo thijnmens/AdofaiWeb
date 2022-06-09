@@ -4,6 +4,9 @@ A simple ADOFAI mod which creates a websocket that you can listen to
 
 **WARNING: THIS MOD DOES NOTHING ON IT'S OWN**
 
+## Known Issues
+- Doesn't work on base game levels
+
 ## Instalation
 
 I've created a few example layouts in the [examples](https://github.com/thijnmens/AdofaiWeb/tree/master/Examples) folder, you can choose one from here or simply make your own with the instructions down below.
