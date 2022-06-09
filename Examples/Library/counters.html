@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- counters -->
+		<table class="text-3xl align-center text-justify text-white">
+			<tbody>
+				<tr>
+					<td id="death-counter" class="w-32">💀 0</td>
+					<td id="checkpoint-counter" class="w-32">🚩 0</td>
+					<td id="attempt-counter" class="w-32">🏆 0</td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- counters -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// counters-update
+				if (jsonData.type === 'update') {
+					document.getElementById('death-counter').textContent = "💀 " + jsonData.data.deaths;
+					document.getElementById('checkpoint-counter').textContent = "🚩 " + jsonData.data.checkpoints;
+					document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
+				};
+				//
+			});
+		</script>
+	</body>
+</html>

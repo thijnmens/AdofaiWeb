@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- song-title -->
+		<h1 id="song-title" class="text-white text-5xl">Not Playing</h1>
+		<!-- song-title -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// song-title-update
+				if (jsonData.type === 'loadLevel') {
+					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');
+				};
+				//
+			});
+		</script>
+	</body>
+</html>

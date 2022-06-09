@@ -17,7 +17,7 @@
 						<td>
 							<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
 								<img
-									id="cover-image"
+									id="song-image"
 									src="data:image/octet-stream;base64,UklGRm4EAABXRUJQVlA4IGIEAADQJACdASqAAHwAPm0qj0WkJKEYvB40SAbEsYBmRmGsANWo8phPM11b53mKgA97nT3Giz9PtvENj8GiiMhOsc7h6jRrH/gpJCAwgggKb7ZU2V6DLIwC8lfSIpzf1jrkwlZpOHKQ/KM9k6+KYg9jdOVFkiXkcfr4WoTSnr4bMMXeDrgv87dPfA2oL5ilnFBnBg4AH3aI+Vm0ELOzutUzlQWrLCcBMWOU49xUP7eztbnmlfMcCqcXS/JZNXkyYvL19DopKPLIyT3aZSidxXcRIiZFDeCuguO/oi+/9gxJ6TED280TL3Eg8Edi5ShhTuaQRf3/JaaFaN9A+SNQbFyNN/nAbFPnamS6NLckbVaqqcyrIN6XGfHkay4qFJXn7HvB+DO8IE9QJknJyjfTB52boEAA/uwQt//kGP3ZfsFwW8WaOc4fgWOxgrRU1H+MAFllnevmOyn7ncZulwXE/HXOSJNANvE6YA10BToP67pTocRVxpSyI6tyHwH1N5VfSu7qLho/CYFswQjd1O/9LoNeL81RTjbn1AxDop2o8c7snkRdI4w+orxk6U3s5jgBr2eRsR+zxb8XRVGCojl+FkDtqNoELAhvuCrHBIR6oyJlLIZEbMSeh5QAEWN1bErShHr4mxuhldMhb0NtlQeVE2Nl0TdM+EHIOSqYUp5DT6Tyb34qYNUr/XTkyeusJRSExH3I3Ntm/8wnEgUYnmAqxJQV39TjoKlRslv2rsk4wFKdoFKStqJzNO2849lG+W4KfWIAwePCob/rl2xI+ImdMn3KTQh/IalfNa3t5KBgcuCeZ3pW1iPgSndE5bhJRc3f/qeUZxft1/1ZoJA25Jbc9IEvhfytddKrcO7ltBBORG76D8fRpGXZtgnQOg2+exmmVfcEk0l2FQf5du64urRZzoLwRgVTeM87H5O1ZtDySZZAl8xhu3rPOdlYl/0LR6D+TJfTbAIWUQhi2H1wG/7LHQtBsXZMedVrXZfEr2TCnx2Q8HGD3ElRYPh9xTJ0QIwNPLWaFzZSpzhMaTNpZYVN6YTg6o1yYmUW3OGWlOouOcLo87YbFa3Evl6Aj1IbGY0zBr+VUxNCLM+6SZrSK58+uT0mwDrCi4GETIfU9QEnt6PieXV9KLUSHbclwX/pEpxPy3LR5YISIepIcOpwbrm6uR8uoCiie4otXkcUfTB33+vF687VvGdweqIUxIaaFPGIoLYuCjEnZ4mG6vDTMWsQx016WN8EGvIXiQQGJp+PbHFWwB/6nqauOu3YlrVneryRxomJzCj7/t8rh6Y9trRJ8tdAIIRXKmSvuTrtgTCv/HaIOdqLWF9VrKT5iktIwnmXoYPzCNBg2vealUIFI6o2vvQrlogOYGdU4SsXyhiuvtebBo3vWt1Xxx9ZrZqaAOZoIGIeIv4cbseFHkphBwPumZ6uVnDr8To+XS91NmVTAECoRynkWpal5cHx9vrGHSRisOdVGtAD+YVm+pGG9UPwrzqxmhegAAA="
 									alt="Failed to load"
 									class="object-cover rounded-3xl h-[500px] w-[500px]"
@@ -33,7 +33,7 @@
 									Overlay by Thijnmens
 								</h2>
 								<br />
-								<table class="text-3xl align-center text-center">
+								<table id="hits" class="text-3xl align-center text-center">
 									<tbody>
 										<tr>
 											<td id="TE" style="color: #ed3e3e" class="w-6">0</td>
@@ -94,16 +94,6 @@
 				const jsonData = JSON.parse(event.data)
 				if (jsonData.type === 'update') {
 					document.getElementById('root').style = 'width: 1200px';
-					/*if (jsonData.data.difficulty === 0) {
-						document.getElementById('difficulty').textContent = "Lenient";
-						document.getElementById('difficulty').style = "color: #86e370";
-					} else if (jsonData.data.difficulty === 1) {
-						document.getElementById('difficulty').textContent = "Normal";
-						document.getElementById('difficulty').style = "color: #e3e370";
-					} else if (jsonData.data.difficulty === 5) {
-						document.getElementById('difficulty').textContent = "Strict";
-						document.getElementById('difficulty').style = "color: #ed3e3e";
-					}*/
 					document.getElementById('TE').textContent = jsonData.data.tooEarly;
 					document.getElementById('VE').textContent = jsonData.data.veryEarly;
 					document.getElementById('EP').textContent = jsonData.data.earlyPerfect;
@@ -116,10 +106,10 @@
 					document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
 				} else if (jsonData.type === 'loadLevel') {
-					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');;
-					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');;
+					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');
+					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');
 				} else if (jsonData.type === 'levelImage') {
-					document.getElementById('cover-image').src = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`;
+					document.getElementById('song-image').src = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`;
 				} else {
 					document.getElementById('root').style = 'width: 0%'
 				}

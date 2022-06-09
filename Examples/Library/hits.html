@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- hits -->
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<table id="hits" class="text-3xl align-center text-center">
+				<tbody>
+					<tr>
+						<td id="TE" style="color: #ed3e3e" class="w-6">0</td>
+						<td class="w-2"></td>
+						<td id="VE" style="color: #eb9a46" class="w-8">0</td>
+						<td class="w-2"></td>
+						<td id="EP" style="color: #e3e370" class="w-8">0</td>
+						<td class="w-2"></td>
+						<td id="PP" style="color: #86e370" class="w-8">0</td>
+						<td class="w-2"></td>
+						<td id="LP" style="color: #e3e370" class="w-8">0</td>
+						<td class="w-2"></td>
+						<td id="VL" style="color: #eb9a46" class="w-8">0</td>
+						<td class="w-2"></td>
+						<td id="TL" style="color: #ed3e3e" class="w-8">0</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!-- hits -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// hits-update
+				if (jsonData.type === 'update') {
+					document.getElementById('TE').textContent = jsonData.data.tooEarly;
+					document.getElementById('VE').textContent = jsonData.data.veryEarly;
+					document.getElementById('EP').textContent = jsonData.data.earlyPerfect;
+					document.getElementById('PP').textContent = jsonData.data.perfect;
+					document.getElementById('LP').textContent = jsonData.data.latePerfect;
+					document.getElementById('VL').textContent = jsonData.data.veryLate;
+					document.getElementById('TL').textContent = jsonData.data.tooLate;
+				//
+				}
+			});
+		</script>
+	</body>
+</html>

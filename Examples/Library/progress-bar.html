@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- progress-bar -->
+		<div class="w-80 h-8 bg-gray-600 mt-4">
+			<div
+				id="progress-bar"
+				class="h-8 bg-green-600 transition duration-200 ease-in-out"
+				style="width: 0%"
+			></div>
+		</div>
+		<!-- progress-bar -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// progress-bar-update
+				if (jsonData.type === 'update') {
+					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
+				};
+				//
+			});
+		</script>
+	</body>
+</html>

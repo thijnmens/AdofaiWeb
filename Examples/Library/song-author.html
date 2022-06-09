@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- song-author -->
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<h2 id="song-author" class="text-gray-400 text-2xl mt-2">Overlay by Thijnmens</h2>
+		</div>
+		<!-- song-author -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// song-author-update
+				if (jsonData.type === 'loadLevel') {
+					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');
+				};
+				//
+			});
+		</script>
+	</body>
+</html>
