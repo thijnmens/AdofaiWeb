@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- hitmode -->
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<div class="w-full text-center">
+				<h2 id="hitmode" class="text-2xl font-bold" style="color: #e3e370">Normal</h2>
+			</div>
+		</div>
+		<!-- hitmode -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// hitmode-update
+				if (jsonData.type === 'update') {
+					if (jsonData.data.hitMode === 'Normal') {
+						document.getElementById('hitmode').style = 'color: #e3e370';
+						document.getElementById('hitmode').textContent = 'Normal';
+					} else if (jsonData.data.hitMode === 'Strict') {
+						document.getElementById('hitmode').style = 'color: #ed3e3e';
+						document.getElementById('hitmode').textContent = 'Strict';
+					} else {
+						document.getElementById('hitmode').style = 'color: #86e370';
+						document.getElementById('hitmode').textContent = 'Lenient';
+					};
+				//
+				};
+			});
+		</script>
+	</body>
+</html>

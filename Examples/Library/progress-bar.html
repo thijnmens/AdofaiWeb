@@ -7,12 +7,19 @@
 	</head>
 	<body>
 		<!-- progress-bar -->
-		<div class="w-80 h-8 bg-gray-600 mt-4">
-			<div
-				id="progress-bar"
-				class="h-8 bg-green-600 transition duration-200 ease-in-out"
-				style="width: 0%"
-			></div>
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<div class="relative w-80 h-8 bg-gray-600 mt-4">
+				<div
+					id="progress-bar"
+					class="h-8 bg-green-600 absolute top-0 left-0"
+					style="width: 0%"
+				></div>
+				<div
+					id="max-bar"
+					class="absolute h-8 bg-red-600 w-[0.5%] top-0 left-0"
+					style="margin-left: 0%"
+				></div>
+			</div>
 		</div>
 		<!-- progress-bar -->
 
@@ -27,8 +34,14 @@
 				const jsonData = JSON.parse(event.data);
 
 				// progress-bar-update
+				const maxPercent = 0;
+
 				if (jsonData.type === 'update') {
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
+					if (jsonData.data.percentComplete > maxPercent) {
+						maxPercent = jsonData.data.percentComplete;
+						document.getElementById('max-bar').style = `margin-left: ${jsonData.data.percentComplete*100}%`;
+					};
 				};
 				//
 			});

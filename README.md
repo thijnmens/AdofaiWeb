@@ -5,7 +5,8 @@ A simple ADOFAI mod which creates a websocket that you can listen to
 **WARNING: THIS MOD DOES NOTHING ON IT'S OWN**
 
 ## Known Issues
-- Doesn't work on base game levels
+
+-   Doesn't work on base game levels
 
 ## Instalation
 
@@ -64,7 +65,10 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
 	"type": "update",
 	"data": {
         "paused": bool,
+        "noFail": bool,
+        "planets": int,
         "checkpoints": int,
+        "hitMode": string,
         "deaths": int,
         "attempts": int,
         "speed": double,
@@ -76,6 +80,10 @@ The websocket is hosted on http://127.0.0.1:420/server and sends data in 1 of th
         "latePerfect": int,
         "veryLate": int,
         "tooLate": int,
+        "tileBPM": int,
+        "currentBPM": int,
+        "startProgress": int,
+        "recKPS": int,
     }
 }
 ```

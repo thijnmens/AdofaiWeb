@@ -68,11 +68,16 @@
 									</tbody>
 								</table>
 								<div class="h-6"></div>
-								<div class="w-80 h-8 bg-gray-600 mt-4">
+								<div class="w-80 h-8 bg-gray-600 mt-4 relative">
 									<div
 										id="progress-bar"
-										class="h-8 bg-green-600 transition duration-200 ease-in-out"
+										class="abosulte h-8 bg-green-600 ease-in-out top-0 left-0"
 										style="width: 0%"
+									></div>
+									<div
+										id="max-bar"
+										class="absolute h-8 bg-red-600 w-[0.5%] top-0 left-0"
+										style="margin-left: 0%"
 									></div>
 								</div>
 								<br />
@@ -84,14 +89,15 @@
 		</div>
 		<script lang="js">
 			const socket = new WebSocket('ws://localhost:420/server');
+			let maxPercent = 0;
 
 			socket.addEventListener('open', (event) => {
-				socket.send('connect')
-			})
+				socket.send('connect');
+			});
 
 			socket.addEventListener('message', (event) => {
-				console.log(event.data)
-				const jsonData = JSON.parse(event.data)
+				console.log(event.data);
+				const jsonData = JSON.parse(event.data);
 				if (jsonData.type === 'update') {
 					document.getElementById('root').style = 'width: 1200px';
 					document.getElementById('TE').textContent = jsonData.data.tooEarly;
@@ -105,15 +111,20 @@
 					document.getElementById('checkpoint-counter').textContent = "🚩 " + jsonData.data.checkpoints;
 					document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
+					if (jsonData.data.percentComplete > maxPercent) {
+						maxPercent = jsonData.data.percentComplete;
+						document.getElementById('max-bar').style = `margin-left: ${jsonData.data.percentComplete*100}%`;
+					};
 				} else if (jsonData.type === 'loadLevel') {
 					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');
 					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');
 				} else if (jsonData.type === 'levelImage') {
 					document.getElementById('song-image').src = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`;
 				} else {
-					document.getElementById('root').style = 'width: 0%'
-				}
-			})
+					document.getElementById('root').style = 'width: 0%';
+					maxPercent = 0;
+				};
+			});
 		</script>
 	</body>
 </html>

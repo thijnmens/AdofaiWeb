@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- paused -->
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<h2 id="paused" class="text-3xl text-white">▶️</h2>
+		</div>
+		<!-- paused -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// paused-update
+				if (jsonData.type === 'update') {
+					if (jsonData.data.paused === true) {
+						document.getElementById('paused').textContent = "⏸️";
+					} else {
+						document.getElementById('paused').textContent = "▶️";
+					}
+				//
+				}
+			});
+		</script>
+	</body>
+</html>

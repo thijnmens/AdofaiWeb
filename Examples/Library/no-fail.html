@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<!-- no-fail -->
+		<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+			<h2 id="no-fail" class="text-3xl text-white">NF ❌</h2>
+		</div>
+		<!-- no-fail -->
+
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+
+
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
+
+			socket.addEventListener('message', (event) => {
+				const jsonData = JSON.parse(event.data);
+
+				// no-fail-update
+				if (jsonData.type === 'update') {
+					if (jsonData.data.noFail === true) {
+						document.getElementById('no-fail').textContent = "NF ✔";
+					} else {
+						document.getElementById('no-fail').textContent = "NF ❌";
+					}
+				//
+				}
+			});
+		</script>
+	</body>
+</html>

@@ -15,32 +15,27 @@ namespace AdofaiWeb
 {
     public class Main
     {
+        private static void Completed() { }
+        private static bool didSendImage = false;
 
-        private static void completed() { }
-
+        public static WebSocketServer webServer;
+        private static LevelData levelData;
+        private static int i = 0;
         public static bool enabled;
         public static readonly Dictionary<HitMargin, int> lenientCounts = new Dictionary<HitMargin, int>();
         public static readonly Dictionary<HitMargin, int> normalCounts = new Dictionary<HitMargin, int>();
         public static readonly Dictionary<HitMargin, int> strictCounts = new Dictionary<HitMargin, int>();
+        public static double TileBpm;
+        public static double CurBpm;
+        public static double RecKPS;
+        public static double startProg;
         public static UnityModManager.ModEntry mod;
-        private static WebSocketServer webServer;
-        private static LevelData levelData;
-        private static int i = 0;
-        private static bool didSendImage = false;
 
-
-        private static WebSocketServer InitServer(string IPAdress, int Port)
-        {
-            var wssv = new WebSocketServer($"ws://{IPAdress}:{Port}");
-            wssv.AddWebSocketService<Server>("/server");
-            return wssv;
-        }
-
-        private static bool Load(UnityModManager.ModEntry modEntry)
+        public static bool Setup(UnityModManager.ModEntry modEntry)
         {
             try
             {
-
+                
                 webServer = InitServer("127.0.0.1", 420);
 
                 var harmony = new Harmony(modEntry.Info.Id);
@@ -57,6 +52,13 @@ namespace AdofaiWeb
                 modEntry.Logger.Error(e.ToString());
                 return false; // Failed to load
             }
+        }
+
+        private static WebSocketServer InitServer(string IPAdress, int Port)
+        {
+            var wssv = new WebSocketServer($"ws://{IPAdress}:{Port}");
+            wssv.AddWebSocketService<WebScocket>("/server");
+            return wssv;
         }
 
         private static string Base64Image(string path)
@@ -126,8 +128,11 @@ namespace AdofaiWeb
                         $"{{" +
                             $"\"type\": \"update\"," +
                             $"\"data\": {{" +
-                                $"\"paused\": {scrController.instance.paused},".ToLower() +
+                                $"\"paused\": " + $"{scrController.instance.paused},".ToLower() +
+                                $"\"noFail\": " + $"{scrController.instance.noFail},".ToLower() +
+                                $"\"planets\": {scrController.instance.planetsUsed}," +
                                 $"\"checkpoints\": {scrController.checkpointsUsed}," +
+                                $"\"hitMode\": \"{GCS.difficulty}\"," +
                                 $"\"deaths\": {scrController.deaths}," +
                                 $"\"attempts\": {Persistence.GetCustomWorldAttempts(levelData.Hash)}," +
                                 $"\"speed\": \"{scrController.instance.speed}\"," +
@@ -138,14 +143,18 @@ namespace AdofaiWeb
                                 $"\"perfect\": {GetHits(HitMargin.Perfect)}," +
                                 $"\"latePerfect\": {GetHits(HitMargin.LatePerfect)}," +
                                 $"\"veryLate\": {GetHits(HitMargin.VeryLate)}," +
-                                $"\"tooLate\": {GetHits(HitMargin.TooLate)}" +
+                                $"\"tooLate\": {GetHits(HitMargin.TooLate)}," +
+                                $"\"tileBPM\": {TileBpm}," +
+                                $"\"currentBPM\": {CurBpm}," +
+                                $"\"startProgress\": {startProg}," +
+                                $"\"recKPS\": {RecKPS}" +
                             $"}}" +
                         $"}}";
                     }
 
                 }
 
-                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+                webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, Completed);
             }
         }
 
@@ -158,11 +167,6 @@ namespace AdofaiWeb
         {
             webServer.Stop();
             return true;
-        }
-
-        public static void WaitUntil()
-        {
-
         }
 
         [HarmonyPatch(typeof(LevelData), "LoadLevel")]
@@ -253,7 +257,7 @@ namespace AdofaiWeb
 
 
 
-                    webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, completed);
+                    webServer.WebSocketServices["/server"].Sessions.BroadcastAsync(data, Completed);
                 }
             }
 
@@ -270,7 +274,89 @@ namespace AdofaiWeb
         }
     }
 
-    public class Server: WebSocketBehavior
+    // https://github.com/c3nb/Overlayer/blob/master/Overlayer/Patches/BpmUpdater.cs
+    public static class BpmUpdater
+    {
+        public static FieldInfo curSpd = typeof(GCS).GetField("currentSpeedRun", AccessTools.all) ?? typeof(GCS).GetField("currentSpeedTrial", AccessTools.all);
+        public static float bpm = 0, pitch = 0, playbackSpeed = 1;
+        public static bool beforedt = false;
+        public static double beforebpm = 0;
+        [HarmonyPatch(typeof(CustomLevel), "Play")]
+        public static class CustomLevelStart
+        {
+            public static void Postfix(CustomLevel __instance)
+            {
+                if (!__instance.controller.gameworld) return;
+                if (__instance.controller.customLevel == null) return;
+                Init(__instance.controller);
+            }
+        }
+        [HarmonyPatch(typeof(scrPressToStart), "ShowText")]
+        public static class BossLevelStart
+        {
+
+            public static void Postfix(scrPressToStart __instance)
+            {
+                if (!__instance.controller.gameworld) return;
+                if (__instance.controller.customLevel != null) return;
+                Init(__instance.controller);
+                Main.startProg = __instance.controller.percentComplete * 100;
+            }
+        }
+        [HarmonyPatch(typeof(scrPlanet), "MoveToNextFloor")]
+        public static class MoveToNextFloor
+        {
+            public static void Postfix(scrPlanet __instance, scrFloor floor)
+            {
+                if (!__instance.controller.gameworld) return;
+                if (floor.nextfloor == null) return;
+                double curBPM = GetRealBpm(floor, bpm) * playbackSpeed * pitch;
+                bool isDongta = false;
+                Main.TileBpm = bpm * __instance.controller.speed;
+                if (isDongta || beforedt) curBPM = beforebpm;
+                Main.CurBpm = curBPM;
+                Main.RecKPS = Math.Round(curBPM / 60, 2);
+                beforedt = isDongta;
+                beforebpm = curBPM;
+            }
+        }
+        public static double GetRealBpm(scrFloor floor, float bpm)
+        {
+            if (floor == null)
+                return bpm;
+            if (floor.nextfloor == null)
+                return floor.controller.speed * bpm;
+            return 60.0 / (floor.nextfloor.entryTime - floor.entryTime);
+        }
+        public static void Init(scrController __instance)
+        {
+            float kps = 0;
+            if (__instance.customLevel != null)
+            {
+                pitch = (float)__instance.customLevel.levelData.pitch / 100;
+                if (GCS.standaloneLevelMode) pitch *= (float)curSpd.GetValue(null);
+                playbackSpeed = scnEditor.instance.playbackSpeed;
+                bpm = __instance.customLevel.levelData.bpm * playbackSpeed * pitch;
+            }
+            else
+            {
+                pitch = __instance.conductor.song.pitch;
+                playbackSpeed = 1;
+                bpm = __instance.conductor.bpm * pitch;
+            }
+            float cur = bpm;
+            if (__instance.currentSeqID != 0)
+            {
+                double speed = __instance.controller.speed;
+                cur = (float)(bpm * speed);
+            }
+            Main.TileBpm = cur;
+            Main.CurBpm = cur;
+            Main.RecKPS = Math.Round(kps, 2);
+        }
+    }
+
+    public class WebScocket: WebSocketBehavior
     {
         protected override void OnMessage(MessageEventArgs e)
         {
