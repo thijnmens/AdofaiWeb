@@ -1,131 +1,130 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-transparent">
-    <div
-      id="root"
-      class="bg-gray-800 opacity-95 w-[1200px] h-[600px] p-16 rounded-3xl overflow-hidden drop-shadow-2xl transition ease-in-out duration-600 flex gap-16"
-    >
-      <div class="bg-white/20 rounded-3xl w-[472px] h-[472px]">
-        <img
-          id="song-image"
-          src=""
-          alt="Failed to load"
-          class="drop-shadow-2xl rounded-3xl object-cover w-[472px] h-[472px] shrink-0 text-white"
-        />
-      </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body class="bg-transparent">
+		<div
+			id="root"
+			class="bg-gray-800 opacity-95 h-[600px] rounded-3xl transition ease-in-out duration-1000 overflow-hidden drop-shadow-2xl"
+			style="width: 1200px"
+		>
+			<table>
+				<tbody>
+					<tr>
+						<td>
+							<div class="drop-shadow-2xl m-16 w-[500px] h-[500px]">
+								<img
+									id="song-image"
+									src="data:image/octet-stream;base64,UklGRm4EAABXRUJQVlA4IGIEAADQJACdASqAAHwAPm0qj0WkJKEYvB40SAbEsYBmRmGsANWo8phPM11b53mKgA97nT3Giz9PtvENj8GiiMhOsc7h6jRrH/gpJCAwgggKb7ZU2V6DLIwC8lfSIpzf1jrkwlZpOHKQ/KM9k6+KYg9jdOVFkiXkcfr4WoTSnr4bMMXeDrgv87dPfA2oL5ilnFBnBg4AH3aI+Vm0ELOzutUzlQWrLCcBMWOU49xUP7eztbnmlfMcCqcXS/JZNXkyYvL19DopKPLIyT3aZSidxXcRIiZFDeCuguO/oi+/9gxJ6TED280TL3Eg8Edi5ShhTuaQRf3/JaaFaN9A+SNQbFyNN/nAbFPnamS6NLckbVaqqcyrIN6XGfHkay4qFJXn7HvB+DO8IE9QJknJyjfTB52boEAA/uwQt//kGP3ZfsFwW8WaOc4fgWOxgrRU1H+MAFllnevmOyn7ncZulwXE/HXOSJNANvE6YA10BToP67pTocRVxpSyI6tyHwH1N5VfSu7qLho/CYFswQjd1O/9LoNeL81RTjbn1AxDop2o8c7snkRdI4w+orxk6U3s5jgBr2eRsR+zxb8XRVGCojl+FkDtqNoELAhvuCrHBIR6oyJlLIZEbMSeh5QAEWN1bErShHr4mxuhldMhb0NtlQeVE2Nl0TdM+EHIOSqYUp5DT6Tyb34qYNUr/XTkyeusJRSExH3I3Ntm/8wnEgUYnmAqxJQV39TjoKlRslv2rsk4wFKdoFKStqJzNO2849lG+W4KfWIAwePCob/rl2xI+ImdMn3KTQh/IalfNa3t5KBgcuCeZ3pW1iPgSndE5bhJRc3f/qeUZxft1/1ZoJA25Jbc9IEvhfytddKrcO7ltBBORG76D8fRpGXZtgnQOg2+exmmVfcEk0l2FQf5du64urRZzoLwRgVTeM87H5O1ZtDySZZAl8xhu3rPOdlYl/0LR6D+TJfTbAIWUQhi2H1wG/7LHQtBsXZMedVrXZfEr2TCnx2Q8HGD3ElRYPh9xTJ0QIwNPLWaFzZSpzhMaTNpZYVN6YTg6o1yYmUW3OGWlOouOcLo87YbFa3Evl6Aj1IbGY0zBr+VUxNCLM+6SZrSK58+uT0mwDrCi4GETIfU9QEnt6PieXV9KLUSHbclwX/pEpxPy3LR5YISIepIcOpwbrm6uR8uoCiie4otXkcUfTB33+vF687VvGdweqIUxIaaFPGIoLYuCjEnZ4mG6vDTMWsQx016WN8EGvIXiQQGJp+PbHFWwB/6nqauOu3YlrVneryRxomJzCj7/t8rh6Y9trRJ8tdAIIRXKmSvuTrtgTCv/HaIOdqLWF9VrKT5iktIwnmXoYPzCNBg2vealUIFI6o2vvQrlogOYGdU4SsXyhiuvtebBo3vWt1Xxx9ZrZqaAOZoIGIeIv4cbseFHkphBwPumZ6uVnDr8To+XS91NmVTAECoRynkWpal5cHx9vrGHSRisOdVGtAD+YVm+pGG9UPwrzqxmhegAAA="
+									alt="Failed to load"
+									class="object-cover rounded-3xl h-[500px] w-[500px]"
+									height="500"
+									width="500"
+								/>
+							</div>
+						</td>
+						<td>
+							<div class="">
+								<h1 id="song-title" class="text-white text-5xl">Not Playing</h1>
+								<h2 id="song-author" class="text-gray-400 text-2xl mt-2">
+									Overlay by Thijnmens
+								</h2>
+								<br />
+								<table id="hits" class="text-3xl align-center text-center">
+									<tbody>
+										<tr>
+											<td id="TE" style="color: #ed3e3e" class="w-6">0</td>
+											<td class="w-2"></td>
+											<td id="VE" style="color: #eb9a46" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td id="EP" style="color: #e3e370" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td id="PP" style="color: #86e370" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td id="LP" style="color: #e3e370" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td id="VL" style="color: #eb9a46" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td id="TL" style="color: #ed3e3e" class="w-8">0</td>
+											<td class="w-2"></td>
+											<td class="w-4" />
+											<!--<td id="difficulty" style="color: #e3e370" class="w-8">
+												<strong>Normal</strong>
+											</td>-->
+										</tr>
+									</tbody>
+								</table>
+								<br />
+								<table class="text-3xl align-center text-justify text-white">
+									<tbody>
+										<tr>
+											<td id="death-counter" class="w-32">💀 0</td>
+											<td id="checkpoint-counter" class="w-32">🚩 0</td>
+											<td id="attempt-counter" class="w-32">🏆 0</td>
+										</tr>
+									</tbody>
+								</table>
+								<div class="h-6"></div>
+								<div class="w-80 h-8 bg-gray-600 mt-4 relative">
+									<div
+										id="progress-bar"
+										class="abosulte h-8 bg-green-600 ease-in-out top-0 left-0"
+										style="width: 0%"
+									></div>
+									<div
+										id="max-bar"
+										class="absolute h-8 bg-red-600 w-[0.5%] top-0 left-0"
+										style="margin-left: 0%"
+									></div>
+								</div>
+								<br />
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<script lang="js">
+			const socket = new WebSocket('ws://localhost:420/server');
+			let maxPercent = 0;
 
-      <div class="flex flex-col justify-center z-10">
-        <div class="flex flex-col gap-[21px]">
-          <div>
-            <h1 id="song-title" class="text-white text-5xl tracking-tight">
-              Not Playing
-            </h1>
-            <h2 id="song-author" class="text-gray-400 text-2xl mt-2">
-              Overlay by Thijnmens
-            </h2>
-          </div>
+			socket.addEventListener('open', (event) => {
+				socket.send('connect');
+			});
 
-          <div id="hits" class="flex text-3xl gap-5">
-            <div id="TE" style="color: #ed3e3e">0</div>
-            <div id="VE" style="color: #eb9a46">0</div>
-            <div id="EP" style="color: #e3e370">0</div>
-            <div id="PP" style="color: #86e370">0</div>
-            <div id="LP" style="color: #e3e370">0</div>
-            <div id="VL" style="color: #eb9a46">0</div>
-            <div id="TL" style="color: #ed3e3e">0</div>
-          </div>
-
-          <!-- <td id="difficulty" style="color: #e3e370" class="w-8">
-                    <strong>Normal</strong>
-                  </td> -->
-
-          <div class="flex text-3xl text-justify text-white">
-            <div id="death-counter" class="w-32">💀 0</div>
-            <div id="checkpoint-counter" class="w-32">🚩 0</div>
-            <div id="attempt-counter" class="w-32">🏆 0</div>
-          </div>
-        </div>
-
-        <div class="w-80 h-8 bg-gray-600 mt-10 relative">
-          <div
-            id="progress-bar"
-            class="abosulte h-8 bg-white/60 ease-in-out top-0 left-0"
-            style="width: 0%"
-          ></div>
-          <div
-            id="max-bar"
-            class="absolute h-8 bg-white/80 w-[0.5%] top-0 left-0"
-            style="margin-left: 0%"
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <script lang="js">
-      const socket = new WebSocket('ws://localhost:420/server');
-      let maxPercent = 0;
-      let levelImage;
-
-      socket.addEventListener('open', (event) => {
-        socket.send('connect');
-      });
-
-      socket.addEventListener('message', (event) => {
-        console.log(event.data);
-
-        const jsonData = JSON.parse(event.data);
-
-        switch (jsonData.type) {
-          case 'update':
-            document.getElementById('root').style = 'opacity: 1';
-            document.getElementById('TE').textContent = jsonData.data.tooEarly;
-            document.getElementById('VE').textContent = jsonData.data.veryEarly;
-            document.getElementById('EP').textContent = jsonData.data.earlyPerfect;
-            document.getElementById('PP').textContent = jsonData.data.perfect;
-            document.getElementById('LP').textContent = jsonData.data.latePerfect;
-            document.getElementById('VL').textContent = jsonData.data.veryLate;
-            document.getElementById('TL').textContent = jsonData.data.tooLate;
-
-            document.getElementById('death-counter').textContent = "💀 " + jsonData.data.deaths;
-            document.getElementById('checkpoint-counter').textContent = "🚩 " + jsonData.data.checkpoints;
-            document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
-            document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
-
-            if (jsonData.data.percentComplete > maxPercent) {
-              maxPercent = jsonData.data.percentComplete;
-              document.getElementById('max-bar').style = `margin-left: ${jsonData.data.percentComplete*100}%`;
-            };
-            break;
-
-          case 'loadLevel':
-            document.getElementById('song-title').textContent = jsonData.data.song?.replace(/<\/?[^>]+(>|$)/g, '');
-            document.getElementById('song-author').textContent = jsonData.data.author?.replace(/<\/?[^>]+(>|$)/g, '');
-
-            maxPercent = 0;
-            break;
-
-          case 'levelImage':
-            if (jsonData.data.previewImageExtension && jsonData.data.previewImage) {
-              levelImage = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`
-            } else {
-              levelImage = ''
-            }
-
-            document.getElementById('song-image').src = levelImage;
-            break;
-
-          default:
-            document.getElementById('root').style = 'opacity: 0;';
-            levelImage = '';
-            maxPercent = 0;
-            break;
-        }
-      });
-    </script>
-  </body>
+			socket.addEventListener('message', (event) => {
+				console.log(event.data);
+				const jsonData = JSON.parse(event.data);
+				if (jsonData.type === 'update') {
+					document.getElementById('root').style = 'width: 1200px';
+					document.getElementById('TE').textContent = jsonData.data.tooEarly;
+					document.getElementById('VE').textContent = jsonData.data.veryEarly;
+					document.getElementById('EP').textContent = jsonData.data.earlyPerfect;
+					document.getElementById('PP').textContent = jsonData.data.perfect;
+					document.getElementById('LP').textContent = jsonData.data.latePerfect;
+					document.getElementById('VL').textContent = jsonData.data.veryLate;
+					document.getElementById('TL').textContent = jsonData.data.tooLate;
+					document.getElementById('death-counter').textContent = "💀 " + jsonData.data.deaths;
+					document.getElementById('checkpoint-counter').textContent = "🚩 " + jsonData.data.checkpoints;
+					document.getElementById('attempt-counter').textContent = "🏆 " + jsonData.data.attempts;
+					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
+					if (jsonData.data.percentComplete > maxPercent) {
+						maxPercent = jsonData.data.percentComplete;
+						document.getElementById('max-bar').style = `margin-left: ${jsonData.data.percentComplete*100}%`;
+					};
+				} else if (jsonData.type === 'loadLevel') {
+					document.getElementById('song-title').textContent = jsonData.data.song.replace(/<\/?[^>]+(>|$)/g, '');
+					document.getElementById('song-author').textContent = jsonData.data.author.replace(/<\/?[^>]+(>|$)/g, '');
+				} else if (jsonData.type === 'levelImage') {
+					document.getElementById('song-image').src = `data:image/${jsonData.data.previewImageExtension};base64, ${jsonData.data.previewImage}`;
+				} else {
+					document.getElementById('root').style = 'width: 0%';
+					maxPercent = 0;
+				};
+			});
+		</script>
+	</body>
 </html>
