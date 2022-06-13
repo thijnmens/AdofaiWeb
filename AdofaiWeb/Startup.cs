@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using UnityModManagerNet;
 
 namespace AdofaiWeb
@@ -10,7 +9,7 @@ namespace AdofaiWeb
 
         internal static void Load(UnityModManager.ModEntry modEntry)
         {
-            LoadAssembly("C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed/websocket-sharp.dll");
+            //LoadAssembly("Mods/AdofaiWeb/websocket-sharp.dll");
 
             Main.Setup(modEntry);
         }
