@@ -34,7 +34,7 @@
 				const jsonData = JSON.parse(event.data);
 
 				// progress-bar-update
-				const maxPercent = 0;
+				let maxPercent = 0;
 
 				if (jsonData.type === 'update') {
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
