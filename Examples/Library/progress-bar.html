@@ -32,11 +32,9 @@
 
 			// progress-bar-update
 			let maxPercent = 0;
+			
 			socket.addEventListener('message', (event) => {
 				const jsonData = JSON.parse(event.data);
-
-				
-				
 
 				if (jsonData.type === 'update') {
 					document.getElementById('progress-bar').style = `width: ${jsonData.data.percentComplete*100}%`;
