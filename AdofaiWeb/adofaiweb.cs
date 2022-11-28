@@ -108,7 +108,7 @@ namespace AdofaiWeb
 
                 if (SceneManager.GetActiveScene().name == "scnEditor")
                 {
-                    string path = scrController.instance.levelPath;
+                    string path = ADOBase.levelPath;
 
                     if (!didSendImage)
                     {
@@ -286,9 +286,9 @@ namespace AdofaiWeb
         {
             public static void Postfix(CustomLevel __instance)
             {
-                if (!__instance.controller.gameworld) return;
-                if (__instance.controller.customLevel == null) return;
-                Init(__instance.controller);
+                if (!ADOBase.controller.gameworld) return;
+                if (ADOBase.customLevel == null) return;
+                Init(ADOBase.controller);
             }
         }
         [HarmonyPatch(typeof(scrPressToStart), "ShowText")]
@@ -297,10 +297,10 @@ namespace AdofaiWeb
 
             public static void Postfix(scrPressToStart __instance)
             {
-                if (!__instance.controller.gameworld) return;
-                if (__instance.controller.customLevel != null) return;
-                Init(__instance.controller);
-                Main.startProg = __instance.controller.percentComplete * 100;
+                if (!ADOBase.controller.gameworld) return;
+                if (ADOBase.customLevel != null) return;
+                Init(ADOBase.controller);
+                Main.startProg = ADOBase.controller.percentComplete * 100;
             }
         }
         [HarmonyPatch(typeof(scrPlanet), "MoveToNextFloor")]
@@ -325,29 +325,29 @@ namespace AdofaiWeb
             if (floor == null)
                 return bpm;
             if (floor.nextfloor == null)
-                return floor.controller.speed * bpm;
+                return ADOBase.controller.speed * bpm;
             return 60.0 / (floor.nextfloor.entryTime - floor.entryTime);
         }
         public static void Init(scrController __instance)
         {
             float kps = 0;
-            if (__instance.customLevel != null)
+            if (ADOBase.customLevel != null)
             {
-                pitch = (float)__instance.customLevel.levelData.pitch / 100;
+                pitch = (float)ADOBase.customLevel.levelData.pitch / 100;
                 if (GCS.standaloneLevelMode) pitch *= (float)curSpd.GetValue(null);
                 playbackSpeed = scnEditor.instance.playbackSpeed;
-                bpm = __instance.customLevel.levelData.bpm * playbackSpeed * pitch;
+                bpm = ADOBase.customLevel.levelData.bpm * playbackSpeed * pitch;
             }
             else
             {
-                pitch = __instance.conductor.song.pitch;
+                pitch = ADOBase.conductor.song.pitch;
                 playbackSpeed = 1;
-                bpm = __instance.conductor.bpm * pitch;
+                bpm = ADOBase.conductor.bpm * pitch;
             }
             float cur = bpm;
             if (__instance.currentSeqID != 0)
             {
-                double speed = __instance.controller.speed;
+                double speed = ADOBase.controller.speed;
                 cur = (float)(bpm * speed);
             }
             Main.TileBpm = cur;
