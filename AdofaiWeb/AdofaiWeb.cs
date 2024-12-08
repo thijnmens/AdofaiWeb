@@ -1,16 +1,26 @@
 ﻿using System;
+using System.Reflection;
+using HarmonyLib;
 using UnityModManagerNet;
+using WebSocketSharp.Server;
 
 namespace AdofaiWeb
 {
-	public class AdofaiWeb
+	public static class AdofaiWeb
 	{
 
 		public static bool Enabled { get; private set; }
+		public static UnityModManager.ModEntry ModEntry { get; private set; }
+		public static WebSocketServer WebSocketServer { get; private set; }
+		public static WebsocketHelper WebsocketHelper { get; private set; }
+
+		private static Harmony Harmony { get; set; }
 
 		public static bool Setup(UnityModManager.ModEntry modEntry) {
 			try {
+				ModEntry = modEntry;
 				modEntry.OnToggle = OnToggle;
+				Harmony = new Harmony(modEntry.Info.Id);
 				return true;
 			}
 			catch (Exception e) {
@@ -27,10 +37,19 @@ namespace AdofaiWeb
 		}
 
 		private static bool Run(UnityModManager.ModEntry modEntry) {
+			Harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+			WebsocketHelper = new WebsocketHelper();
+
+			WebSocketServer = new WebSocketServer("ws://localhost:4444");
+			WebSocketServer.AddWebSocketService("/", () => WebsocketHelper);
+			WebSocketServer.Start();
 			return true;
 		}
 
 		private static bool Stop(UnityModManager.ModEntry modEntry) {
+			Harmony.UnpatchAll();
+			WebSocketServer.Stop();
 			return true;
 		}
 	}

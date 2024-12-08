@@ -4,7 +4,7 @@ using UnityModManagerNet;
 
 namespace AdofaiWeb
 {
-	internal static class Startup 
+	internal static class Startup
 	{
 
 		internal static void Load(UnityModManager.ModEntry modEntry) {

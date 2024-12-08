@@ -42,6 +42,9 @@
         <Reference Include="Assembly-CSharp-firstpass">
             <HintPath>C:\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Newtonsoft.Json.dll</HintPath>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="System.Data"/>
@@ -64,8 +67,16 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AdofaiWeb.cs"/>
+        <Compile Include="Messages\IMessage.cs"/>
+        <Compile Include="Messages\LoadSceneMessage.cs"/>
+        <Compile Include="Messages\StartMapMessage.cs"/>
+        <Compile Include="Messages\MessageType.cs"/>
+        <Compile Include="Patches\SceneManagerLoadSceneAsyncPatch.cs"/>
+        <Compile Include="Patches\SceneManagerLoadScenePatch.cs"/>
+        <Compile Include="Patches\LevelDataLoadLevelPatch.cs"/>
         <Compile Include="Startup.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="WebsocketHelper.cs"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="info.json"/>
@@ -82,6 +93,6 @@
     </Target>
     -->
     <Target Name="AfterBuild">
-        <Copy SourceFiles="info.json" DestinationFolder="$(outDir)" />
+        <Copy SourceFiles="info.json" DestinationFolder="$(outDir)"/>
     </Target>
 </Project>
