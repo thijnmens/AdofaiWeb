@@ -7,10 +7,10 @@ namespace AdofaiWeb
 	internal static class Startup
 	{
 
-		internal static void Load(UnityModManager.ModEntry modEntry) {
+		internal static bool Load(UnityModManager.ModEntry modEntry) {
 			//LoadAssembly("Mods/AdofaiWebOld/websocket-sharp.dll");
 
-			AdofaiWeb.Setup(modEntry);
+			return AdofaiWeb.Setup(modEntry);
 		}
 
 		private static void LoadAssembly(string path) {
