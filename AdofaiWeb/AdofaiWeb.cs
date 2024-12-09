@@ -20,6 +20,7 @@ namespace AdofaiWeb
 			try {
 				ModEntry = modEntry;
 				modEntry.OnToggle = OnToggle;
+				modEntry.OnUpdate = OnUpdate;
 				Harmony = new Harmony(modEntry.Info.Id);
 				return true;
 			}
@@ -27,6 +28,10 @@ namespace AdofaiWeb
 				modEntry.Logger.Critical(e.ToString());
 				return false;
 			}
+		}
+
+		private static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
+			InputManager.OnUpdate(modEntry, dt);
 		}
 
 		private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value) {

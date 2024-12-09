@@ -67,7 +67,10 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AdofaiWeb.cs"/>
+        <Compile Include="InputManager.cs"/>
         <Compile Include="Messages\IMessage.cs"/>
+        <Compile Include="Messages\KeyDownMessage.cs"/>
+        <Compile Include="Messages\KeyUpMessage.cs"/>
         <Compile Include="Messages\LoadSceneMessage.cs"/>
         <Compile Include="Messages\StartMapMessage.cs"/>
         <Compile Include="Messages\MessageType.cs"/>

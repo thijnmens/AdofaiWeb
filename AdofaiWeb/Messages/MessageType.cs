@@ -3,6 +3,8 @@
 	public enum MessageType
 	{
 		StartMap,
-		LoadScene
+		LoadScene,
+		KeyDown,
+		KeyUp
 	}
 }
