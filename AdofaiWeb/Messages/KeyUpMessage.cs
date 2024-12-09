@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using UnityEngine;
+using Newtonsoft.Json.Converters;
 
 namespace AdofaiWeb.Messages
 {
-	public class KeyUpMessage : IMessage<List<KeyCode>>
+	public class KeyUpMessage : IMessage<List<int>>
 	{
 
-		public KeyUpMessage(List<KeyCode> keys) {
+		public KeyUpMessage(List<int> keys) {
 			this.Type = MessageType.KeyUp;
 			this.ModVersion = AdofaiWeb.ModEntry.Version.ToString();
 			this.GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
@@ -17,7 +17,7 @@ namespace AdofaiWeb.Messages
 		public MessageType Type { get; }
 		public string ModVersion { get; }
 		public string GameVersion { get; }
-		public List<KeyCode> Data { get; }
+		public List<int> Data { get; }
 
 		public override string ToString() {
 			var message = new Dictionary<string, object>
@@ -33,13 +33,13 @@ namespace AdofaiWeb.Messages
 				}
 			};
 
-			return JsonConvert.SerializeObject(message);
+			return JsonConvert.SerializeObject(message, new StringEnumConverter());
 		}
 
 		internal class JsonData
 		{
 
-			[JsonProperty("keys")] public List<KeyCode> Keys;
+			[JsonProperty("keys")] public List<int> Keys;
 		}
 	}
 }

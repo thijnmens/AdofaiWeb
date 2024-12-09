@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ADOFAI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace AdofaiWeb.Messages
 {
@@ -49,7 +50,7 @@ namespace AdofaiWeb.Messages
 				}
 			};
 
-			return JsonConvert.SerializeObject(message);
+			return JsonConvert.SerializeObject(message, new StringEnumConverter());
 		}
 
 		internal class JsonData

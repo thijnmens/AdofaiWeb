@@ -68,6 +68,7 @@
     <ItemGroup>
         <Compile Include="AdofaiWeb.cs"/>
         <Compile Include="InputManager.cs"/>
+        <Compile Include="Messages\HitMessage.cs"/>
         <Compile Include="Messages\IMessage.cs"/>
         <Compile Include="Messages\KeyDownMessage.cs"/>
         <Compile Include="Messages\KeyUpMessage.cs"/>
@@ -77,6 +78,7 @@
         <Compile Include="Patches\SceneManagerLoadSceneAsyncPatch.cs"/>
         <Compile Include="Patches\SceneManagerLoadScenePatch.cs"/>
         <Compile Include="Patches\LevelDataLoadLevelPatch.cs"/>
+        <Compile Include="Patches\scrMistakesManagerAddHitPatch.cs"/>
         <Compile Include="Startup.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="WebsocketHelper.cs"/>

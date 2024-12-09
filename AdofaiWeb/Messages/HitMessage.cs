@@ -4,20 +4,20 @@ using Newtonsoft.Json.Converters;
 
 namespace AdofaiWeb.Messages
 {
-	public class KeyDownMessage : IMessage<List<int>>
+	public class HitMessage : IMessage<object>
 	{
 
-		public KeyDownMessage(List<int> keys) {
-			this.Type = MessageType.KeyDown;
+		public HitMessage(HitMargin hit) {
+			this.Type = MessageType.Hit;
 			this.ModVersion = AdofaiWeb.ModEntry.Version.ToString();
 			this.GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
-			this.Data = keys;
+			this.Data = hit;
 		}
 
 		public MessageType Type { get; }
 		public string ModVersion { get; }
 		public string GameVersion { get; }
-		public List<int> Data { get; }
+		public object Data { get; }
 
 		public override string ToString() {
 			var message = new Dictionary<string, object>
@@ -28,7 +28,7 @@ namespace AdofaiWeb.Messages
 				{
 					"data", new JsonData
 					{
-						Keys = this.Data
+						Hit = (HitMargin)this.Data
 					}
 				}
 			};
@@ -39,7 +39,7 @@ namespace AdofaiWeb.Messages
 		internal class JsonData
 		{
 
-			[JsonProperty("keys")] public List<int> Keys;
+			[JsonProperty("hit")] public HitMargin Hit;
 		}
 	}
 }

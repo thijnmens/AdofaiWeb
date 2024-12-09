@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UnityEngine.SceneManagement;
 
 namespace AdofaiWeb.Messages
@@ -36,7 +37,7 @@ namespace AdofaiWeb.Messages
 				}
 			};
 
-			return JsonConvert.SerializeObject(message);
+			return JsonConvert.SerializeObject(message, new StringEnumConverter());
 		}
 
 		internal class JsonData

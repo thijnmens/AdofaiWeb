@@ -5,6 +5,7 @@
 		StartMap,
 		LoadScene,
 		KeyDown,
-		KeyUp
+		KeyUp,
+		Hit
 	}
 }
