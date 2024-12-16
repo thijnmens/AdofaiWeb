@@ -10,7 +10,7 @@ namespace AdofaiWeb.Patches
 		public static void Postfix(HitMargin hit) {
 			if (!AdofaiWeb.Enabled) return;
 
-			AdofaiWeb.WebsocketHelper.SendMessage(new HitMessage(hit));
+			AdofaiWeb.SendMessage(new HitMessage(hit));
 		}
 	}
 }

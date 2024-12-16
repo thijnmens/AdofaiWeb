@@ -11,7 +11,7 @@ namespace AdofaiWeb.Patches
 		public static void Postfix(string sceneName, LoadSceneParameters parameters) {
 			if (!AdofaiWeb.Enabled) return;
 
-			AdofaiWeb.WebsocketHelper.SendMessage(new LoadSceneMessage(sceneName));
+			AdofaiWeb.SendMessage(new LoadSceneMessage(sceneName));
 		}
 	}
 }
