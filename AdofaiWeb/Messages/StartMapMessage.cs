@@ -5,84 +5,84 @@ using Newtonsoft.Json.Converters;
 
 namespace AdofaiWeb.Messages
 {
-	public class StartMapMessage : IMessage<LevelData>
-	{
+    public class StartMapMessage : IMessage<LevelData>
+    {
+        public StartMapMessage(LevelData data, string levelPath)
+        {
+            Type = MessageType.StartMap;
+            ModVersion = AdofaiWeb.ModEntry.Version.ToString();
+            GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
+            Data = data;
+            LevelPath = levelPath;
+        }
 
-		public StartMapMessage(LevelData data, string levelPath) {
-			this.Type = MessageType.StartMap;
-			this.ModVersion = AdofaiWeb.ModEntry.Version.ToString();
-			this.GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
-			this.Data = data;
-			this.LevelPath = levelPath;
-		}
+        public string LevelPath { get; }
 
-		public string LevelPath { get; }
+        public MessageType Type { get; }
+        public string ModVersion { get; }
+        public string GameVersion { get; }
+        public LevelData Data { get; }
 
-		public MessageType Type { get; }
-		public string ModVersion { get; }
-		public string GameVersion { get; }
-		public LevelData Data { get; }
+        public override string ToString()
+        {
+            var message = new Dictionary<string, object>
+            {
+                { "type", Type.ToString() },
+                { "modVersion", ModVersion },
+                { "gameVersion", GameVersion },
+                {
+                    "data", new JsonData
+                    {
+                        LevelPath = LevelPath,
+                        LevelName = Data.song,
+                        LevelArtist = Data.artist,
+                        LevelAuthor = Data.author,
+                        Bpm = Data.bpm,
+                        Difficulty = Data.difficulty,
+                        BackgroundColor = Data.bgImageColor.ToString(),
+                        BackgroundImage = Data.bgImage,
+                        CountdownTicks = Data.countdownTicks,
+                        LevelDescription = Data.levelDesc,
+                        LevelTags = Data.levelTags,
+                        SongFilename = Data.songFilename,
+                        SeizureWarning = Data.seizureWarning,
+                        PreviewImage = Data.previewImage
+                    }
+                }
+            };
 
-		public override string ToString() {
-			var message = new Dictionary<string, object>
-			{
-				{ "type", this.Type.ToString() },
-				{ "modVersion", this.ModVersion },
-				{ "gameVersion", this.GameVersion },
-				{
-					"data", new JsonData
-					{
-						LevelPath = this.LevelPath,
-						LevelName = this.Data.song,
-						LevelArtist = this.Data.artist,
-						LevelAuthor = this.Data.author,
-						Bpm = this.Data.bpm,
-						Difficulty = this.Data.difficulty,
-						BackgroundColor = this.Data.bgImageColor.ToString(),
-						BackgroundImage = this.Data.bgImage,
-						CountdownTicks = this.Data.countdownTicks,
-						LevelDescription = this.Data.levelDesc,
-						LevelTags = this.Data.levelTags,
-						SongFilename = this.Data.songFilename,
-						SeizureWarning = this.Data.seizureWarning,
-						PreviewImage = this.Data.previewImage
-					}
-				}
-			};
+            return JsonConvert.SerializeObject(message, new StringEnumConverter());
+        }
 
-			return JsonConvert.SerializeObject(message, new StringEnumConverter());
-		}
+        internal class JsonData
+        {
+            [JsonProperty("backgroundColor")] public string BackgroundColor;
 
-		internal class JsonData
-		{
+            [JsonProperty("backgroundImage")] public string BackgroundImage;
 
-			[JsonProperty("backgroundColor")] public string BackgroundColor;
+            [JsonProperty("bpm")] public float Bpm;
 
-			[JsonProperty("backgroundImage")] public string BackgroundImage;
+            [JsonProperty("countdownTicks")] public int CountdownTicks;
 
-			[JsonProperty("bpm")] public float Bpm;
+            [JsonProperty("difficulty")] public int Difficulty;
 
-			[JsonProperty("countdownTicks")] public int CountdownTicks;
+            [JsonProperty("levelArtist")] public string LevelArtist;
 
-			[JsonProperty("difficulty")] public int Difficulty;
+            [JsonProperty("levelAuthor")] public string LevelAuthor;
 
-			[JsonProperty("levelArtist")] public string LevelArtist;
+            [JsonProperty("levelDescription")] public string LevelDescription;
 
-			[JsonProperty("levelAuthor")] public string LevelAuthor;
+            [JsonProperty("levelName")] public string LevelName;
 
-			[JsonProperty("levelDescription")] public string LevelDescription;
+            [JsonProperty("levelPath")] public string LevelPath;
 
-			[JsonProperty("levelName")] public string LevelName;
+            [JsonProperty("levelTags")] public string LevelTags;
 
-			[JsonProperty("levelPath")] public string LevelPath;
+            [JsonProperty("previewImage")] public string PreviewImage;
 
-			[JsonProperty("levelTags")] public string LevelTags;
+            [JsonProperty("seizureWarning")] public bool SeizureWarning;
 
-			[JsonProperty("previewImage")] public string PreviewImage;
-
-			[JsonProperty("seizureWarning")] public bool SeizureWarning;
-
-			[JsonProperty("songFilename")] public string SongFilename;
-		}
-	}
+            [JsonProperty("songFilename")] public string SongFilename;
+        }
+    }
 }

@@ -4,42 +4,42 @@ using Newtonsoft.Json.Converters;
 
 namespace AdofaiWeb.Messages
 {
-	public class KeyDownMessage : IMessage<List<int>>
-	{
+    public class KeyDownMessage : IMessage<List<int>>
+    {
+        public KeyDownMessage(List<int> keys)
+        {
+            Type = MessageType.KeyDown;
+            ModVersion = AdofaiWeb.ModEntry.Version.ToString();
+            GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
+            Data = keys;
+        }
 
-		public KeyDownMessage(List<int> keys) {
-			this.Type = MessageType.KeyDown;
-			this.ModVersion = AdofaiWeb.ModEntry.Version.ToString();
-			this.GameVersion = AdofaiWeb.ModEntry.GameVersion.ToString();
-			this.Data = keys;
-		}
+        public MessageType Type { get; }
+        public string ModVersion { get; }
+        public string GameVersion { get; }
+        public List<int> Data { get; }
 
-		public MessageType Type { get; }
-		public string ModVersion { get; }
-		public string GameVersion { get; }
-		public List<int> Data { get; }
+        public override string ToString()
+        {
+            var message = new Dictionary<string, object>
+            {
+                { "type", Type.ToString() },
+                { "modVersion", ModVersion },
+                { "gameVersion", GameVersion },
+                {
+                    "data", new JsonData
+                    {
+                        Keys = Data
+                    }
+                }
+            };
 
-		public override string ToString() {
-			var message = new Dictionary<string, object>
-			{
-				{ "type", this.Type.ToString() },
-				{ "modVersion", this.ModVersion },
-				{ "gameVersion", this.GameVersion },
-				{
-					"data", new JsonData
-					{
-						Keys = this.Data
-					}
-				}
-			};
+            return JsonConvert.SerializeObject(message, new StringEnumConverter());
+        }
 
-			return JsonConvert.SerializeObject(message, new StringEnumConverter());
-		}
-
-		internal class JsonData
-		{
-
-			[JsonProperty("keys")] public List<int> Keys;
-		}
-	}
+        internal class JsonData
+        {
+            [JsonProperty("keys")] public List<int> Keys;
+        }
+    }
 }

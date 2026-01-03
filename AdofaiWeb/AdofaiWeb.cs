@@ -7,57 +7,64 @@ using WebSocketSharp.Server;
 
 namespace AdofaiWeb
 {
-	public static class AdofaiWeb
-	{
+    public static class AdofaiWeb
+    {
+        public static bool Enabled { get; private set; }
+        public static UnityModManager.ModEntry ModEntry { get; private set; }
+        public static WebSocketServer WebSocketServer { get; private set; }
 
-		public static bool Enabled { get; private set; }
-		public static UnityModManager.ModEntry ModEntry { get; private set; }
-		public static WebSocketServer WebSocketServer { get; private set; }
+        private static Harmony Harmony { get; set; }
 
-		private static Harmony Harmony { get; set; }
+        public static bool Setup(UnityModManager.ModEntry modEntry)
+        {
+            try
+            {
+                ModEntry = modEntry;
+                modEntry.OnToggle = OnToggle;
+                modEntry.OnLateUpdate = OnLateUpdate;
+                Harmony = new Harmony(modEntry.Info.Id);
+                return true;
+            }
+            catch (Exception e)
+            {
+                modEntry.Logger.Critical(e.ToString());
+                return false;
+            }
+        }
 
-		public static bool Setup(UnityModManager.ModEntry modEntry) {
-			try {
-				ModEntry = modEntry;
-				modEntry.OnToggle = OnToggle;
-				modEntry.OnLateUpdate = OnLateUpdate;
-				Harmony = new Harmony(modEntry.Info.Id);
-				return true;
-			}
-			catch (Exception e) {
-				modEntry.Logger.Critical(e.ToString());
-				return false;
-			}
-		}
+        private static void OnLateUpdate(UnityModManager.ModEntry modEntry, float dt)
+        {
+            InputManager.OnLateUpdate(modEntry, dt);
+        }
 
-		private static void OnLateUpdate(UnityModManager.ModEntry modEntry, float dt) {
-			InputManager.OnLateUpdate(modEntry, dt);
-		}
+        private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
+        {
+            var success = value ? Run(modEntry) : Stop(modEntry);
 
-		private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value) {
-			var success = value ? Run(modEntry) : Stop(modEntry);
+            if (success) Enabled = value;
+            return success;
+        }
 
-			if (success) Enabled = value;
-			return success;
-		}
+        private static bool Run(UnityModManager.ModEntry modEntry)
+        {
+            Harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-		private static bool Run(UnityModManager.ModEntry modEntry) {
-			Harmony.PatchAll(Assembly.GetExecutingAssembly());
+            WebSocketServer = new WebSocketServer("ws://localhost:4444");
+            WebSocketServer.AddWebSocketService<WebsocketHelper>("/");
+            WebSocketServer.Start();
+            return true;
+        }
 
-			WebSocketServer = new WebSocketServer("ws://localhost:4444");
-			WebSocketServer.AddWebSocketService<WebsocketHelper>("/");
-			WebSocketServer.Start();
-			return true;
-		}
+        public static void SendMessage(IMessage<object> msg)
+        {
+            WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(msg.ToString());
+        }
 
-		public static void SendMessage(IMessage<object> msg) {
-			WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(msg.ToString());
-		}
-
-		private static bool Stop(UnityModManager.ModEntry modEntry) {
-			Harmony.UnpatchAll();
-			WebSocketServer.Stop();
-			return true;
-		}
-	}
+        private static bool Stop(UnityModManager.ModEntry modEntry)
+        {
+            Harmony.UnpatchAll();
+            WebSocketServer.Stop();
+            return true;
+        }
+    }
 }

@@ -1,11 +1,11 @@
 ﻿namespace AdofaiWeb.Messages
 {
-	public enum MessageType
-	{
-		StartMap,
-		LoadScene,
-		KeyDown,
-		KeyUp,
-		Hit
-	}
+    public enum MessageType
+    {
+        StartMap,
+        LoadScene,
+        KeyDown,
+        KeyUp,
+        Hit
+    }
 }

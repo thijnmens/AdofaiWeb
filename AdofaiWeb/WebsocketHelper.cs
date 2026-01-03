@@ -1,9 +1,8 @@
-﻿using AdofaiWeb.Messages;
-using WebSocketSharp;
-using WebSocketSharp.Server;
+﻿using WebSocketSharp.Server;
 
 namespace AdofaiWeb
 {
-	public class WebsocketHelper : WebSocketBehavior
-	{ }
+    public class WebsocketHelper : WebSocketBehavior
+    {
+    }
 }

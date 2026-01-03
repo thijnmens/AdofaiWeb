@@ -1,9 +1,9 @@
 ﻿{
-	"Id": "AdofaiWeb",
-	"DisplayName": "Adofai Web",
-	"Version": "2.0.0",
-	"GameVersion": "31.1.0",
-	"AssemblyName": "AdofaiWeb.dll",
-	"EntryMethod": "AdofaiWeb.Startup.Load",
-	"Author": "Thijnmens"
+  "Id": "AdofaiWeb",
+  "DisplayName": "Adofai Web",
+  "Version": "2.0.0",
+  "GameVersion": "31.1.0",
+  "AssemblyName": "AdofaiWeb.dll",
+  "EntryMethod": "AdofaiWeb.Startup.Load",
+  "Author": "Thijnmens"
 }
